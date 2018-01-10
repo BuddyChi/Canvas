@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+
+        }
+
+        canvas {
+            border: 1px dashed black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id='canvas' width="600" height="600">
+
+    </canvas>
+</body>
+<script>
+    document.body.onload = start;
+
+    function start() {
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        var width = canvas.width;
+        var height = canvas.height;
+        var r = width / 2;
+
+        function drawGuid() {
+            var now = new Date();
+            var h = now.getHours();
+            var m = now.getMinutes();
+            var s = now.getSeconds();
+            // drawMinute(m, s);
+            draw
+        }
+
+
+        setInterval(function () {
+            render();
+        }, 1000)
+
+        // function drawMinute(m, s) {
+        //     ctx.beginPath();
+        //     ctx.lineWidth = "5px";
+        //     var deg = (s - 15) / 60 * Math.PI * 2;
+        //     var pointX = (r * 0.85) * Math.cos(deg);
+        //     var pointY = (r * 0.85) * Math.sin(deg);
+        //     console.log(pointX,pointY)
+        //     ctx.lineTo(pointX, pointY);
+        //     ctx.stroke();
+        //     ctx.closePath();
+        // }
+
+
+        function render() {
+            //画外边表盘
+            ctx.arc(width / 2, height / 2, r * 0.95, 0, Math.PI * 2, false)
+            ctx.lineWidth = r * 0.05;
+            ctx.stroke();
+            ctx.closePath();
+
+            //画内圆
+            ctx.beginPath();
+            ctx.lineWidth = 1;
+            ctx.arc(width / 2, height / 2, r * 0.85, 0, Math.PI * 2, false)
+            ctx.strokeStyle = 'gray';
+            ctx.stroke();
+            ctx.closePath();
+
+            //将原点移动到圆心
+            ctx.translate(r, r);
+            //定义刻度
+            var hour = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2];
+
+            for (var deg = 0; deg < 360; deg = deg + 6) {
+
+                var spotX = (r * 0.85) * Math.cos(deg * 2 * Math.PI / 360);
+                var spotY = (r * 0.85) * Math.sin(deg * 2 * Math.PI / 360);
+                var spot_r = r * 0.025;
+
+                //刻度的绘制
+                ctx.beginPath();
+                if (deg % 30 == 0) {
+                    ctx.fillStyle = '#000';
+                } else {
+                    ctx.fillStyle = '#ccc';
+                }
+                ctx.arc(spotX, spotY, spot_r, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.closePath();
+
+                //数字的绘制
+                if (deg % 30 == 0) {
+                    ctx.beginPath();
+                    ctx.fillStyle = "#333";
+                    ctx.font = "20px Arial";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    var textX = 0.85 * (r * 0.85) * Math.cos(deg * 2 * Math.PI / 360);
+                    var textY = 0.85 * (r * 0.85) * Math.sin(deg * 2 * Math.PI / 360);
+                    ctx.fillText(hour[deg / 30], textX, textY);
+                    ctx.closePath();
+                }
+            }
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+    function drawHour() {
+
+    }
+
+    function drawSec() {
+
+    }
+
+
+</script>
+
+</html>

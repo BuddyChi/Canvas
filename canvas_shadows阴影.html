@@ -12,8 +12,14 @@
             var canvas = document.getElementById('canvas');
             if (canvas.getContext) {
                 var ctx = canvas.getContext('2d');        
-                
+                ctx.shadowOffsetX = 3;
+                ctx.shadowOffsetY = 2;
+                ctx.shadowBlur = 2;
+                ctx.shadowColor = "rgba(0,0,0,0.5)";
 
+                ctx.font = "50px 微软雅黑"
+                ctx.fillStyle = "black";
+                ctx.fillText("你好啊",5,100);
 
             } else {
                 alert('Your browser does not support canvas!')
@@ -30,7 +36,7 @@
 </head>
 
 <body onload = "draw()">
-    <canvas id='canvas' width="150" height="150">
+    <canvas id='canvas' width="800" height="500">
 
     </canvas>
 </body>

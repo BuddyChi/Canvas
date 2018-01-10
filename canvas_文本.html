@@ -12,9 +12,9 @@
             var canvas = document.getElementById('canvas');
             if (canvas.getContext) {
                 var ctx = canvas.getContext('2d');        
-                
-
-
+                ctx.font = "48px 微软雅黑";
+                ctx.textAlign = 'center';
+                ctx.strokeText("Hello world",50,100)
             } else {
                 alert('Your browser does not support canvas!')
             }
@@ -30,7 +30,7 @@
 </head>
 
 <body onload = "draw()">
-    <canvas id='canvas' width="150" height="150">
+    <canvas id='canvas' width="500" height="500">
 
     </canvas>
 </body>
