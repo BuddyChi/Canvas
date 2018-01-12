@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script>
+
+        function draw() {
+            var canvas = document.getElementById('canvas');
+            if (canvas.getContext) {
+                var ctx = canvas.getContext('2d');    
+                ctx.rotate(10*Math.PI/180);                    
+                ctx.fillRect(30,30,50,80)
+                
+            } else {
+                alert('Your browser does not support canvas!')
+            }
+        }
+
+    </script>
+
+    <style>
+        canvas{
+            border:1px solid black;
+        }
+    </style>
+</head>
+
+<body onload = "draw()">
+    <canvas id='canvas' width="500" height="500">
+
+    </canvas>
+</body>
+
+</html>

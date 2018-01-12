@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+
+        }
+
+        canvas {
+            border: 1px dashed black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id='canvas' width="600" height="600">
+
+    </canvas>
+</body>
+<script>
+    document.body.onload = start;
+    var PI = Math.PI;
+
+    function start() {
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+        var width = canvas.width;
+        var height = canvas.height;
+        var r = width / 2; //半径
+        function render() {
+            /*
+                画钟表静态的元件
+             */
+            ctx.clearRect(0, 0, width, height);
+            ctx.save();
+            ctx.translate(r, r);
+
+            //画表盘外层轮廓
+            ctx.beginPath();
+            ctx.lineWidth = r * 0.05;
+            ctx.strokeStyle = "#333";
+            ctx.arc(0, 0, r * 0.95, 0, PI * 2);
+            ctx.stroke();
+            ctx.closePath();
+
+            //画内层圆的轮廓
+            ctx.beginPath();
+            ctx.lineWidth = 1;
+            var inR = r * 0.85;
+            ctx.arc(0, 0, inR, 0, PI * 2);
+            ctx.stroke();
+            ctx.closePath();
+
+            var hour = [3,4,5,6,7,8,9,10,11,12,1,2],i=0;
+            for (var deg=0;deg<360;deg=deg+6){
+                ctx.beginPath();                
+                var _deg = deg*PI/180;
+                var inCircleX = inR*Math.cos(_deg);
+                var inCircleY = inR*Math.sin(_deg);
+                ctx.fillStyle = '#ccc';
+                if(deg%30 == 0){
+                    var txtR = inR * 0.85;
+                    var textX = Math.cos(_deg)*txtR;
+                    var textY = Math.sin(_deg)*txtR;               
+                    ctx.font = '30px Arial';
+                    ctx.textBaseLine = 'middle';
+                    ctx.textAlign = 'center';
+                    ctx.fillStyle = '#333';
+                    ctx.fillText(hour[i],textX,textY);
+                    i++;
+                }                
+                ctx.arc(inCircleX,inCircleY,5,0,PI*2);
+                ctx.fill();  
+                ctx.beginPath();
+                ctx.arc(0,0,r*0.05,0,PI*2);
+                ctx.fill();
+                ctx.closePath();    
+            }
+        }
+
+        function drawGuid(){
+            var now = new Date();
+            var hour = now.getHours();
+            var minute = now.getMinutes();
+            var second = now.getSeconds();
+            var month = now.getMonth()+1;
+            var day = now.getDate();
+            drawHour(hour,minute);
+            drawMinute(minute,second);
+            drawSecond(second);
+            drawDate(month,day);            
+        }
+
+        function drawHour(h,m){
+            ctx.save();
+            var h = h + m/60;
+            var deg =h*30*PI/180;
+            ctx.rotate(deg);            
+            ctx.beginPath();
+            ctx.lineWidth = 9;
+            ctx.strokeStyle = '#000';
+            ctx.lineCap = 'round';
+            ctx.moveTo(0, r * 0.4 * 0.2);
+            ctx.lineTo(0, -r * 0.4 * 0.8);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function drawMinute(m,s){
+            ctx.save();
+            var m = m + s/60;            
+            var deg = m*6*PI/180;
+            ctx.rotate(deg);
+            ctx.beginPath();
+            ctx.lineWidth = 6;
+            ctx.lineCap = "round";
+            ctx.moveTo(0,r*0.2*0.2);
+            ctx.lineTo(0, -r * 0.6 * 0.7);           
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function drawSecond(s){  
+            ctx.save();
+            var deg = s*6*PI/180;
+            ctx.rotate(deg);            
+            ctx.beginPath();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#EE82EE';
+            ctx.lineCap = 'round';
+            ctx.moveTo(0, r * 0.6 * 0.2);
+            ctx.lineTo(0, -r * 0.7 * 0.8);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function drawDate(m,d){
+            ctx.save();
+            ctx.beginPath();
+            ctx.font = "20px Arial";
+            ctx.fillStyle = "black";            
+            ctx.textBaseLine = 'middle';
+            ctx.textAlign = 'center';
+            ctx.fillText(m+"/"+d,-5,r*0.3);
+            ctx.restore();
+        }
+      
+        setInterval(function () {
+            render();
+            drawGuid();
+            ctx.restore();
+        }, 3/1000)
+    }
+    
+</script>
+
+</html>

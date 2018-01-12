@@ -28,109 +28,132 @@
 <script>
     document.body.onload = start;
 
+
     function start() {
-        var canvas = document.getElementById('canvas');
-        var ctx = canvas.getContext('2d');
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
         var width = canvas.width;
         var height = canvas.height;
-        var r = width / 2;
-
-        function drawGuid() {
-            var now = new Date();
-            var h = now.getHours();
-            var m = now.getMinutes();
-            var s = now.getSeconds();
-            // drawMinute(m, s);
-            draw
-        }
-
-
-        setInterval(function () {
-            render();
-        }, 1000)
-
-        // function drawMinute(m, s) {
-        //     ctx.beginPath();
-        //     ctx.lineWidth = "5px";
-        //     var deg = (s - 15) / 60 * Math.PI * 2;
-        //     var pointX = (r * 0.85) * Math.cos(deg);
-        //     var pointY = (r * 0.85) * Math.sin(deg);
-        //     console.log(pointX,pointY)
-        //     ctx.lineTo(pointX, pointY);
-        //     ctx.stroke();
-        //     ctx.closePath();
-        // }
-
-
+        var r = width / 2; //半径
         function render() {
-            //画外边表盘
-            ctx.arc(width / 2, height / 2, r * 0.95, 0, Math.PI * 2, false)
+            /*
+                画钟表静态的元件
+             */
+            ctx.clearRect(0, 0, width, height);
+            ctx.save();
+            ctx.translate(r, r);
+
+            //画表盘外层轮廓
+            ctx.beginPath();
             ctx.lineWidth = r * 0.05;
+            ctx.strokeStyle = "#333";
+            ctx.arc(0, 0, r * 0.95, 0, Math.PI * 2);
             ctx.stroke();
             ctx.closePath();
 
-            //画内圆
+            //画内层圆的轮廓
             ctx.beginPath();
             ctx.lineWidth = 1;
-            ctx.arc(width / 2, height / 2, r * 0.85, 0, Math.PI * 2, false)
-            ctx.strokeStyle = 'gray';
+            var radi2 = r * 0.85;
+            ctx.arc(0, 0, radi2, 0, Math.PI * 2);
             ctx.stroke();
             ctx.closePath();
 
-            //将原点移动到圆心
-            ctx.translate(r, r);
-            //定义刻度
-            var hour = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2];
-
+            // 画刻度 使用Math.sin(deg)、Math.cos(deg)来计算圆上点的坐标
+            // 每隔6度画一个点
+            var hour = [6, 5, 4, 3, 2, 1, 12, 11, 10, 9, 8, 7], i = 0;
             for (var deg = 0; deg < 360; deg = deg + 6) {
-
-                var spotX = (r * 0.85) * Math.cos(deg * 2 * Math.PI / 360);
-                var spotY = (r * 0.85) * Math.sin(deg * 2 * Math.PI / 360);
-                var spot_r = r * 0.025;
-
-                //刻度的绘制
+                var spotX = radi2 * Math.sin(deg * 2 * Math.PI / 360);
+                var spotY = radi2 * Math.cos(deg * 2 * Math.PI / 360);
+                var spot = r * 0.02; //刻度半径
                 ctx.beginPath();
+                ctx.fillStyle = "#ccc";
                 if (deg % 30 == 0) {
-                    ctx.fillStyle = '#000';
-                } else {
-                    ctx.fillStyle = '#ccc';
+                    ctx.fillStyle = "#333";
+                    spot = r * 0.025;
+                    var textX = (radi2 * 0.85) * Math.sin(deg * 2 * Math.PI / 360); //文字x坐标
+                    var textY = (radi2 * 0.85) * Math.cos(deg * 2 * Math.PI / 360); //文字y坐标
+                    ctx.font = r * 0.1 + "px Arial";
+                    ctx.textBaseline = "middle";// 文字垂直对齐方式
+                    ctx.textAlign = "center";   // 文字水平对齐方式
+                    ctx.fillText(hour[i], textX, textY);
+                    i++;
                 }
-                ctx.arc(spotX, spotY, spot_r, 0, Math.PI * 2);
+                ctx.arc(spotX, spotY, spot, 0, 2 * Math.PI);
                 ctx.fill();
                 ctx.closePath();
-
-                //数字的绘制
-                if (deg % 30 == 0) {
-                    ctx.beginPath();
-                    ctx.fillStyle = "#333";
-                    ctx.font = "20px Arial";
-                    ctx.textAlign = "center";
-                    ctx.textBaseline = "middle";
-                    var textX = 0.85 * (r * 0.85) * Math.cos(deg * 2 * Math.PI / 360);
-                    var textY = 0.85 * (r * 0.85) * Math.sin(deg * 2 * Math.PI / 360);
-                    ctx.fillText(hour[deg / 30], textX, textY);
-                    ctx.closePath();
-                }
             }
+            // 画中心
+            ctx.beginPath();
+            ctx.arc(0, 0, r * 0.05, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.closePath();
         }
 
+        function drawGuid() {
+            /*
+                画钟表指针
+             */
+            var now = new Date();
+            h = now.getHours();
+            m = now.getMinutes();
+            s = now.getSeconds();
+            drawHour(h, m);
+            drawMinute(m, s);
+            drawSecond(s);
+        }
 
+        function drawHour(h, m) {
+            // 时针
+            h = h + m / 60;
+            ctx.save();
+            ctx.beginPath();
+            ctx.rotate(2 * Math.PI / 12 * h);
+            ctx.lineWidth = r * 0.05;
+            ctx.lineCap = "round";
+            ctx.moveTo(0, r * 0.4 * 0.2);
+            ctx.lineTo(0, -r * 0.4 * 0.8);
+            ctx.stroke();
+            ctx.closePath();
+            ctx.restore();
+        }
+        function drawMinute(m, s) {
+            // 分针
+            m = m + s / 60;
+            ctx.save();
+            ctx.beginPath();
+            ctx.rotate(2 * Math.PI / 60 * m);
+            ctx.lineWidth = 3;
+            ctx.lineCap = "round";
+            ctx.moveTo(0, r * 0.6 * 0.2);
+            ctx.lineTo(0, -r * 0.6 * 0.8);
+            ctx.stroke();
+            ctx.closePath();
+            ctx.restore();
+        }
+        function drawSecond(s) {
+            // 秒针
+            ctx.save();
+            ctx.beginPath();
+            ctx.rotate(2 * Math.PI / 60 * s);
+            ctx.strokeStyle = "#ff004f";
+            ctx.lineWidth = 1;
+            ctx.lineCap = "round";
+            ctx.moveTo(0, r * 0.8 * 0.2);
+            ctx.lineTo(0, -r * 0.8 * 0.8);
+            ctx.stroke();
+            ctx.closePath();
+            ctx.restore();
+        }
+        setInterval(function () {
+            render();
+            drawGuid();
+            ctx.restore()
+        }, 1000)
     }
 
 
 
-
-
-
-
-
-    function drawHour() {
-
-    }
-
-    function drawSec() {
-
-    }
 
 
 </script>
